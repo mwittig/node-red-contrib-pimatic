@@ -1,2 +1,5 @@
 # node-red-contrib-pimatic
-[Node-Red](https://nodered.org/) Nodes for [Pimatic](https://pimatic.org/) connectivity.
+[Node-Red](https://nodered.org/) Nodes for [Pimatic](https://pimatic.org/) connectivity. 
+
+Available nodes are:
+* tbd

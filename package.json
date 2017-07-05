@@ -1,0 +1,29 @@
+{
+  "name": "node-red-contrib-pimatic",
+  "version": "0.0.1",
+  "description": "Node-red nodes for Pimatic",
+  "license": "GPL-3.0",
+  "author": {
+    "name": "Marcus Wittig",
+    "url": "https://github.com/mwittig/"
+  },
+  "main": "pimatic/pimatic.js",
+  "dependencies": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mwittig/node-red-contrib-pimatic"
+  },
+  "bugs": {
+    "url": "https://github.com/mwittig/node-red-contrib-pimatic/issues"
+  },
+  "keywords": [
+    "pimatic",
+    "node-red"
+  ],
+  "node-red": {
+    "nodes": {
+      "pimatic": "pimatic/pimatic.js"
+    }
+  }
+}
