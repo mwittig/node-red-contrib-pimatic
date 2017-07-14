@@ -1,14 +1,23 @@
 {
   "name": "node-red-contrib-pimatic",
-  "version": "0.0.1",
-  "description": "Node-red nodes for Pimatic",
-  "license": "GPL-3.0",
+  "version": "1.0.x",
+  "description": "Node-red node types for Pimatic",
+  "license": "Apache-2.0",
   "author": {
     "name": "Marcus Wittig",
     "url": "https://github.com/mwittig/"
   },
   "main": "pimatic/pimatic.js",
+  "files": [
+    "pimatic",
+    "LICENSE",
+    "HISTORY.md",
+    "README.md"
+  ],
+  "homepage": "https://github.com/mwittig/node-red-contrib-pimatic",
   "dependencies": {
+    "socket.io-client": "^2.0.3",
+    "uuid": "^3.1.0"
   },
   "repository": {
     "type": "git",
@@ -25,5 +34,14 @@
     "nodes": {
       "pimatic": "pimatic/pimatic.js"
     }
-  }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "contributors": [
+    {
+      "name": "Marcus Wittig",
+      "url": "https://github.com/mwittig"
+    }
+  ]
 }
