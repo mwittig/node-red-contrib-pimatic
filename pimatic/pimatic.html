@@ -1,10 +1,322 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!--
+ * Copyright (C) 2017 Marcus Wittig
+ *
+ * This file is part of node-red-contrib-pimatic.
+ *
+ * node-red-contrib-pimatic is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 2 of
+ * the License, or(at your option) any later version.
+ *
+ * node-red-contrib-pimatic is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.e.
+-->
 
-</body>
-</html>
+<!--
+ * Pimatic Device Action
+-->
+
+<script type="text/x-red" data-template-name="device action">
+   <div class="form-row">
+        <label for="node-input-controller"><i class="fa fa-globe"></i>&nbsp;Controller</label>
+        <input type="text" id="node-input-controller">
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceId"><i class="fa fa-crosshairs"></i>&nbsp;Device Id</label>
+        <input type="text" id="node-input-deviceId">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-bolt"></i>&nbsp;Action</label>
+        <input type="text" id="node-input-action">
+    </div>
+    <div class="form-row">
+        <label for="node-input-parameterName"><i class="fa fa-inbox"></i>&nbsp;Param Name</label>
+        <input type="text" id="node-input-parameterName">
+    </div>
+    <div class="form-row">
+        <label for="node-input-parameterValue"><i class="fa fa-bookmark-o"></i>&nbsp;Param Value</label>
+        <input type="text" id="node-input-parameterValue">
+    </div>
+     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="device action">
+    <p>Call a device action. Optionally, a parameter name and value can be provided to be passed along with the
+    invocation.</p>
+
+	<p><b>Configuration</b></p>
+    <ul>
+        <li><code>Controller</code>: Select or create an controller to connect to a pimatic server</li>
+        <li><code>Device Id</code>: Id of the device on which the action shall be called</li>
+        <li><code>Action</code>: Name of the action operation</li>
+        <li><code>Param Name</code>: Name of the action parameter (optional). If omitted,
+            <code>msg.parameter</code> will be used or no parameter will be sent if <code>msg.parameterName</code>
+            is absent.</li>
+        <li><code>Param Value</code>: Value of the action parameter (optional). If omitted,
+            <code>msg.parameterValue</code> or <code>msg.payload</code> will be used or no
+            parameter will be sent if no Parameter Name is available. </li>
+        <li><code>Name</code>: Specify a name for the node (optional)</li>
+   	 </ul>
+
+	<p><b>Message output</b></p>
+    <ul>
+        <li><code>msg.payload</code>: the result value (if any, empty string otherwise)</li>
+        <li><code>msg.success</code>: the execution status (true or false)</li>
+        <li><code>msg.error</code>: the error message (only present if <code>msg.success</code> is false)</li>
+   	 </ul>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('device action', {
+    category: 'pimatic',
+    color: '#2fa4e7',
+    defaults: {
+      controller: {value: "", type: "controller", required: true},
+      deviceId: {value: "", required: true},
+      action: {value: "", required: true},
+      parameterName: {value: "", required: false},
+      parameterValue: {value: "", required: false},
+      name: {value: "", required: false}
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "pimatic.png",
+    label: function () {
+      return this.name || (this.deviceId && this.action ? (this.deviceId + "." + this.action + '()') : "device action");
+    },
+    labelStyle: function () {
+      return (this.deviceId && this.action && !this.name) ? "node_label_italic" : "";
+    }
+  });
+</script>
+
+<!--
+ * Pimatic Get Variable
+-->
+
+<script type="text/x-red" data-template-name="get variable">
+    <div class="form-row">
+        <label for="node-input-controller"><i class="fa fa-globe"></i>&nbsp;Controller</label>
+        <input type="text" id="node-input-controller" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-variable"><i class="fa fa-crosshairs"></i>&nbsp;Variable</label>
+        <input type="text" id="node-input-variable">
+    	</select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-filter"><i class="fa fa-bookmark-o"></i>&nbsp;Filter</label>
+        <input type="checkbox" id="node-input-filter" style="display: inline-block; width: auto; vertical-align: top;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="get variable">
+    <p>Get the value of the specified <code>variable</code> and send it to the output when the value has changed
+    or when some input has been received.</p>
+    <p>If the <code>filter</code> checkbox is enabled duplicate values will be filtered out. For example, if
+    a switch is already 'on' and an 'on' value update event is received this node will not emit a message.</p>
+
+	<p><b>Configuration</b></p>
+    <ul>
+        <li><code>Controller</code>: Select or create an controller to connect to a pimatic server</li>
+        <li><code>Variable</code>: Name of the variable</li>
+        <li><code>Filter</code>: If checked, duplicate values will be filtered out</li>
+        <li><code>Name</code>: Specify a name for the node (optional)</li>
+   	 </ul>
+
+	<p><b>Message output</b></p>
+    <ul>
+        <li><code>msg.payload</code>: the variable value</li>
+        <li><code>msg.name</code>: the variable name</li>
+        <li><code>msg.unit</code>: the unit of value</li>
+        <li><code>msg.type</code>: the variable type, one of "attribute", "expression", or "value"</li>
+        <li><code>msg.readonly</code>: indicates whether the variable is readonly (true) or read/write (false)</li>
+        <li><code>msg.time</code>: the milliseconds elapsed since the UNIX epoch when the value has been received</li>
+   	 </ul>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('get variable', {
+    category: 'pimatic',
+    color: '#2fa4e7',
+    defaults: {
+      controller: {value: "", type: "controller", required: true},
+      variable: {value: "", required: true},
+      filter: {value: "false", required: true},
+      name: {value: "", required: false},
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "pimatic.png",
+    label: function () {
+      return this.name || this.variable || "get variable";
+    },
+    labelStyle: function () {
+      return (this.variable && !this.name) ? "node_label_italic" : "";
+    }
+  });
+</script>
+
+<!--
+ * Pimatic Set Variable
+-->
+
+<script type="text/x-red" data-template-name="set variable">
+   <div class="form-row">
+        <label for="node-input-controller"><i class="fa fa-globe"></i>&nbsp;Controller</label>
+        <input type="text" id="node-input-controller">
+    </div>
+    <div class="form-row">
+        <label for="node-input-variable"><i class="fa fa-crosshairs"></i>&nbsp;Variable</label>
+        <input type="text" id="node-input-variable" placeholder="Variable">
+    	</select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-unit"><i class="fa fa-balance-scale"></i>&nbsp;Unit</label>
+        <input type="text" id="node-input-unit" placeholder="Unit">
+    </div>
+    <div class="form-row">
+        <label for="node-input-value"><i class="fa fa-bookmark-o"></i>&nbsp;Value</label>
+        <input type="text" id="node-input-value" placeholder="Value">
+    </div>
+     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="set variable">
+    <p>Set the received <code>msg.payload</code> or a given value as the new value for
+    the configured <code>variable</code>.</p>
+
+    <p><b>Configuration</b></p>
+    <ul>
+        <li><code>Controller</code>: Select or create an controller to connect to a pimatic server</li>
+        <li><code>Variable</code>: Name of the variable</li>
+        <li><code>Unit</code>: The unit of value (optional)</li>
+        <li><code>Value</code>: The value (optional). If omitted, <code>msg.payload</code> will be used instead</li>
+        <li><code>Name</code>: Specify a name for the node (optional)</li>
+   	 </ul>
+
+    <p><b>Message output</b></p>
+    <ul>
+        <li><code>msg.payload</code>: the variable value</li>
+        <li><code>msg.name</code>: the variable name</li>
+        <li><code>msg.unit</code>: the unit of value</li>
+        <li><code>msg.type</code>: the variable type, one of "attribute", "expression", or "value"</li>
+        <li><code>msg.readonly</code>: set to false, as readonly variables cannot be set</li>
+        <li><code>msg.time</code>: the milliseconds elapsed since the UNIX epoch when the value has been set</li>
+   	 </ul>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('set variable', {
+    category: 'pimatic',
+    color: '#2fa4e7',
+    defaults: {
+      name: {value: "", required: false},
+      controller: {value: "", type: "controller", required: true},
+      variable: {value: "", required: true},
+      unit: {value: "", required: false},
+      value: {value: "", required: false}
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "pimatic.png",
+    align: 'right',
+    label: function () {
+      return this.name || (this.variable ? (this.variable + "=" + (this.value || "msg.payload")) : "set variable")
+    },
+    labelStyle: function () {
+      return (this.variable && !this.name) ? "node_label_italic" : "";
+    }
+  });
+</script>
+
+<!--
+ * Pimatic Controller
+-->
+
+<script type="text/x-red" data-template-name="controller">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i>&nbsp;Name</label>
+        <input type="text" id="node-config-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-protocol"><i class="fa fa-unlock-alt"></i>&nbsp;Protocol</label>
+    	<select id="node-config-input-protocol" name="node-config-input-protocol" style="width: 250px;">
+			<option value="http">http</option>
+			<option value="https">https</option>
+    	</select>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-host"><i class="fa fa-globe"></i>&nbsp;Host</label>
+        <input type="text" id="node-config-input-host">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-port"><i class="icon-bookmark"></i>&nbsp;Port</label>
+        <input type="text" id="node-config-input-port">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-path"><i class="fa fa-chevron-right"></i>&nbsp;Path</label>
+        <input type="text" id="node-config-input-path">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-username"><i class="fa fa-user"></i>&nbsp;Username</label>
+        <input type="text" id="node-config-input-username">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="fa fa-user-secret"></i>&nbsp;Password</label>
+        <input type="password" id="node-config-input-password">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="controller">
+    <p>Configuration node for the communication with pimatic.</p>
+	<p></p>
+	<b>Configuration</b>
+    <ul>
+        <li><code>Name</code>: Provide a name for the configuration profile</li>
+        <li><code>Protocol:</code>: "http" or "https" (optional, default: http)</li>
+        <li><code>Host</code>: Hostname or IP address of the pimatic server (optional, default: localhost)</li>
+        <li><code>Port</code>: Listener port of the pimatic server (optional, default: 80)</li>
+        <li><code>Path</code>: Additional base path (optional)</li>
+        <li><code>Username</code>: Username to authenticate</li>
+        <li><code>Password</code>: Password to authenticate</li>
+   	 </ul>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('controller', {
+    category: 'config',
+    defaults: {
+      name: {value: "", required: true},
+      protocol: {value: "http", required: true},
+      host: {value: "localhost", required: true},
+      port: {value: 80, required: false},
+      path: {value: "", required: false},
+      username: {value: "", required: false},
+      password: {value: "", required: false}
+    },
+    label: function () {
+      return this.name;
+    }
+  });
+</script>
+
+
+
+
