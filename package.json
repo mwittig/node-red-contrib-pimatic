@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-pimatic",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Node-red node types for Pimatic",
   "license": "Apache-2.0",
   "author": {
