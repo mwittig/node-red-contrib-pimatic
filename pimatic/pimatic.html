@@ -49,7 +49,7 @@
 </script>
 
 <script type="text/x-red" data-help-name="device action">
-    <p>Call a device action. Optionally, a parameter name and value can be provided to be passed along with the
+    <p>Call a pimatic device action. Optionally, a parameter name and value can be provided to be passed along with the
     invocation.</p>
 
 	<p><b>Configuration</b></p>
@@ -76,7 +76,7 @@
 
 <script type="text/javascript">
   RED.nodes.registerType('device action', {
-    category: 'pimatic',
+    category: 'pimatic home',
     color: '#2fa4e7',
     defaults: {
       controller: {value: "", type: "controller", required: true},
@@ -123,7 +123,7 @@
 </script>
 
 <script type="text/x-red" data-help-name="get variable">
-    <p>Get the value of the specified <code>variable</code> and send it to the output when the value has changed
+    <p>Get the value of the specified pimatic <code>variable</code> and send it to the output when the value has changed
     or when some input has been received.</p>
     <p>If the <code>filter</code> checkbox is enabled duplicate values will be filtered out. For example, if
     a switch is already 'on' and an 'on' value update event is received this node will not emit a message.</p>
@@ -149,7 +149,7 @@
 
 <script type="text/javascript">
   RED.nodes.registerType('get variable', {
-    category: 'pimatic',
+    category: 'pimatic home',
     color: '#2fa4e7',
     defaults: {
       controller: {value: "", type: "controller", required: true},
@@ -199,7 +199,7 @@
 
 <script type="text/x-red" data-help-name="set variable">
     <p>Set the received <code>msg.payload</code> or a given value as the new value for
-    the configured <code>variable</code>.</p>
+    the configured pimatic <code>variable</code>.</p>
 
     <p><b>Configuration</b></p>
     <ul>
@@ -223,7 +223,7 @@
 
 <script type="text/javascript">
   RED.nodes.registerType('set variable', {
-    category: 'pimatic',
+    category: 'pimatic home',
     color: '#2fa4e7',
     defaults: {
       name: {value: "", required: false},
