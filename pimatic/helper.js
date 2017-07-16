@@ -61,6 +61,16 @@ var _ = {
       url += util.format('/?username=%s&password=%s', u, p)
     }
     return url;
+  },
+
+  hasProperties: function hasProperties(object) {
+    try {
+      if (Object.keys(object).length > 0) {
+        return true;
+      }
+    }
+    catch (e) {} // ignored
+    return false;
   }
 
 };

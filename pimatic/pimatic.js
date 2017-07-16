@@ -36,6 +36,7 @@ module.exports = function(RED) {
     node.pimaticVariables = {};
     node.pimaticSubscribedVariables = {};
     node.pimaticSocket = null;
+    node.pimaticReady = false;
     node.pimaticDebug('Started' + JSON.stringify(config));
 
     function addVariableHandler(variable) {
@@ -96,6 +97,7 @@ module.exports = function(RED) {
       }
 
       function socketErrorHandler(errorMessage) {
+        node.pimaticReady = false;
         if (errorMessage.hasOwnProperty('message')) {
           errorMessage = 'connection error: ' + errorMessage.message
         }
@@ -158,9 +160,21 @@ module.exports = function(RED) {
         });
 
         node.pimaticSocket.on('variables', function(variables) {
+          node.pimaticReady = true;
           node.pimaticDebug('variables event received variables: ' + variables.length);
           for (var x = 0; x < variables.length; ++x) {
             addVariableHandler(variables[x]);
+          }
+          // check subscriptions for unknown variables
+          for (var key in node.pimaticSubscribedVariables) {
+            if (node.pimaticSubscribedVariables.hasOwnProperty(key)) {
+              if (! node.pimaticVariables.hasOwnProperty(key)) {
+                var subscribers = node.pimaticSubscribedVariables[key];
+                for (var x = 0; x < subscribers.length; ++x) {
+                  subscribers[x].emit('pimatic-variable-not-found', key);
+                }
+              }
+            }
           }
         });
       }
@@ -176,7 +190,7 @@ module.exports = function(RED) {
         node.pimaticSubscribedVariables[variableName] = [subscriber];
       }
 
-      setTimeout(function () {
+      if (node.pimaticReady) {
         if (node.pimaticVariables.hasOwnProperty(variableName)) {
           var variable = node.pimaticVariables[variableName];
           subscriber.emit('pimatic-variable-value-changed', variable);
@@ -185,7 +199,7 @@ module.exports = function(RED) {
           // variable not found
           subscriber.emit('pimatic-variable-not-found', variableName)
         }
-      }, 1000);
+      }
     };
 
     node.invokeAction = function(action, params) {
@@ -285,8 +299,7 @@ module.exports = function(RED) {
           node.pimaticDebug('No more subscribers for variable: ' + variableName);
           delete node.pimaticSubscribedVariables[variableName]
         }
-        node.pimaticDebug('Remaining subscribed vars: ' + Object.keys(node.pimaticSubscribedVariables));
-        if (Object.keys(node.pimaticSubscribedVariables).length === 0) {
+        if (! _.hasProperties(node.pimaticSubscribedVariables)) {
           node.pimaticDebug('no subscribers - stopping web socket');
           stopWebSocket();
         }
@@ -313,6 +326,8 @@ module.exports = function(RED) {
 
     if (_.hasStringValue(config.variable, true) &&
       _.hasStringValue(config.controller, true)) {
+
+      config.variable = config.variable.replace(/^[\s\$]+|\s+$/gm,'');
       node.name = config.name || '(' + config.variable + ')';
       var pimaticController = RED.nodes.getNode(config.controller);
       node.pimaticDebug(JSON.stringify(config));
@@ -405,6 +420,7 @@ module.exports = function(RED) {
     if (_.hasStringValue(config.variable, true) &&
       _.hasStringValue(config.controller, true)) {
 
+      config.variable = config.variable.replace(/^[\s\$]+|\s+$/gm,'');
       node.name = config.name || '(' + config.variable + ')';
       var pimaticController = RED.nodes.getNode(config.controller);
       node.pimaticDebug(JSON.stringify(config));
