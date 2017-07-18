@@ -1,5 +1,10 @@
 # Release History
 
+* 201707xx, V1.1.0
+    * Feature: Added "rule action" node type
+    * Feature: Added (backwards-compatible) "output discriminator" for "get variable" node type 
+    * Improved orderly shutdown, taking into account node-red shuts nodes down in arbitrary order
+    * Revised help texts
 * 20170716, V1.0.2
     * Strip leading dollar sign and leading & trailing white space from variable name
     * Improved state handling of subscription during initialization. "variable not found" does no 

@@ -6,6 +6,8 @@
 
 Available nodes types are:
 
+* `Rule Action` calls a pimatic rule action. The action expression may contain variables to include 
+   items of the message object, for example <code>dim light-1 to ${ payload }</code></li>
 * `Device Action` calls a pimatic device action. Optionally, a parameter name and 
   value can be provided to be passed along with the invocation.
 * `Get Variable` gets the value of the specified pimatic variable and sends it to the 

@@ -18,6 +18,65 @@
 -->
 
 <!--
+ * Pimatic Rule Action
+-->
+
+<script type="text/x-red" data-template-name="rule action">
+   <div class="form-row">
+        <label for="node-input-controller"><i class="fa fa-globe"></i>&nbsp;Controller</label>
+        <input type="text" id="node-input-controller">
+   </div>
+   <div class="form-row">
+        <label for="node-input-actionExpression"><i class="fa fa-bolt"></i>&nbsp;Action Expr.</label>
+        <input type="text" id="node-input-actionExpression">
+   </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="rule action">
+    <p>Call a pimatic rule action. Note, it is only possible to call a single action.</p>
+
+	<p><b>Configuration</b></p>
+    <ul>
+        <li><code>Controller</code>: Select or create an controller to connect to a pimatic server</li>
+        <li><code>Action</code>: Action expression which may contain variables to include items of the message object, for example <code>${ payload }</code></li>
+        <li><code>Name</code>: Specify a name for the node (optional)</li>
+   	 </ul>
+
+	<p><b>Message output</b></p>
+    <ul>
+        <li><code>msg.payload</code>: Result value (if any, empty string otherwise)</li>
+        <li><code>msg.success</code>: Execution status (true or false)</li>
+        <li><code>msg.actionString</code>: The action string resulting from variable substitution</li>
+        <li><code>msg.error</code>: Error message (only present if <code>msg.success</code> is false)</li>
+   	 </ul>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('rule action', {
+    category: 'pimatic home',
+    color: '#2fa4e7',
+    defaults: {
+      controller: {value: "", type: "controller", required: true},
+      actionExpression: {value: "", required: true},
+      name: {value: "", required: false}
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "pimatic.png",
+    label: function () {
+      return this.name || (this.actionExpression ? (this.actionExpression) : "rule action");
+    },
+    labelStyle: function () {
+      return (this.actionExpression && !this.name) ? "node_label_italic" : "";
+    }
+  });
+</script>
+
+<!--
  * Pimatic Device Action
 -->
 
@@ -68,9 +127,9 @@
 
 	<p><b>Message output</b></p>
     <ul>
-        <li><code>msg.payload</code>: the result value (if any, empty string otherwise)</li>
-        <li><code>msg.success</code>: the execution status (true or false)</li>
-        <li><code>msg.error</code>: the error message (only present if <code>msg.success</code> is false)</li>
+        <li><code>msg.payload</code>: Result value (if any, empty string otherwise)</li>
+        <li><code>msg.success</code>: Execution status (true or false)</li>
+        <li><code>msg.error</code>: Error message (only present if <code>msg.success</code> is false)</li>
    	 </ul>
 </script>
 
@@ -117,6 +176,15 @@
         <input type="checkbox" id="node-input-filter" style="display: inline-block; width: auto; vertical-align: top;">
     </div>
     <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-arrow-right"></i></i>&nbsp;Output</label>
+        <select id="node-input-output" style="width: 70%;">
+            <option disabled="disabled"></option>
+            <option value="on-both">both, on variable change and on input</option>
+            <option value="on-change">on variable change</option>
+            <option value="on-input">on input</option>
+        </select>
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;Name</label>
         <input type="text" id="node-input-name">
     </div>
@@ -133,17 +201,18 @@
         <li><code>Controller</code>: Select or create an controller to connect to a pimatic server</li>
         <li><code>Variable</code>: Name of the variable</li>
         <li><code>Filter</code>: If checked, duplicate values will be filtered out</li>
-        <li><code>Name</code>: Specify a name for the node (optional)</li>
+        <li><code>Output</code>: Select, whether message shall be sent on variable change, on input, or both
+        <li><code>Name</code>: Name for the node (optional). Ff not set, the variable will be used instead</li>
    	 </ul>
 
 	<p><b>Message output</b></p>
     <ul>
-        <li><code>msg.payload</code>: the variable value</li>
-        <li><code>msg.name</code>: the variable name</li>
-        <li><code>msg.unit</code>: the unit of value</li>
-        <li><code>msg.type</code>: the variable type, one of "attribute", "expression", or "value"</li>
-        <li><code>msg.readonly</code>: indicates whether the variable is readonly (true) or read/write (false)</li>
-        <li><code>msg.time</code>: the milliseconds elapsed since the UNIX epoch when the value has been received</li>
+        <li><code>msg.payload</code>: Variable value</li>
+        <li><code>msg.name</code>: Variable name</li>
+        <li><code>msg.unit</code>: Unit of value</li>
+        <li><code>msg.type</code>: Variable type, one of "attribute", "expression", or "value"</li>
+        <li><code>msg.readonly</code>: Indicates whether the variable is readonly (true) or read/write (false)</li>
+        <li><code>msg.time</code>: Milliseconds elapsed since the UNIX epoch when the value has been received</li>
    	 </ul>
 </script>
 
@@ -155,7 +224,8 @@
       controller: {value: "", type: "controller", required: true},
       variable: {value: "", required: true},
       filter: {value: "false", required: true},
-      name: {value: "", required: false},
+      output: {value: "on-both", required: false},
+      name: {value: "", required: false}
     },
     inputs: 1,
     outputs: 1,
@@ -165,6 +235,12 @@
     },
     labelStyle: function () {
       return (this.variable && !this.name) ? "node_label_italic" : "";
+    },
+    oneditprepare: function() {
+      if (this.output == null || this.output == "") {
+        this.output = "on-both";
+        $("#node-input-output").val(this.output);
+      }
     }
   });
 </script>
@@ -212,12 +288,12 @@
 
     <p><b>Message output</b></p>
     <ul>
-        <li><code>msg.payload</code>: the variable value</li>
-        <li><code>msg.name</code>: the variable name</li>
-        <li><code>msg.unit</code>: the unit of value</li>
-        <li><code>msg.type</code>: the variable type, one of "attribute", "expression", or "value"</li>
-        <li><code>msg.readonly</code>: set to false, as readonly variables cannot be set</li>
-        <li><code>msg.time</code>: the milliseconds elapsed since the UNIX epoch when the value has been set</li>
+        <li><code>msg.payload</code>: Variable value</li>
+        <li><code>msg.name</code>: Variable name</li>
+        <li><code>msg.unit</code>: Unit of value</li>
+        <li><code>msg.type</code>: Variable type, one of "attribute", "expression", or "value"</li>
+        <li><code>msg.readonly</code>: Set to false, as readonly variables cannot be set</li>
+        <li><code>msg.time</code>: Milliseconds elapsed since the UNIX epoch when the value has been set</li>
    	 </ul>
 </script>
 
