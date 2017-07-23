@@ -47,7 +47,7 @@
     <ul>
         <li><code>Controller</code>: Select or create an controller to connect to a pimatic server</li>
         <li><code>Action</code>: Action expression which may contain variables to include items
-        of the message object, for example <code>${ payload }</code></li>
+        of the input message object, for example <code>${ msg.payload }</code></li>
         <li><code>Msg on Error</code>: If ticked a message will also be sent on invocation error, no
         message will be sent on invocation error otherwise.
         <li><code>Name</code>: Specify a name for the node (optional)</li>
