@@ -1,7 +1,8 @@
 # Release History
 
-* 201707xx, V1.1.0
+* 20170724, V1.1.0
     * Feature: Added "rule action" node type
+    * Feature: Added (backwards-compatible) "Msg on Error" option for "device action" node type
     * Feature: Added (backwards-compatible) "output discriminator" for "get variable" node type 
     * Improved orderly shutdown, taking into account node-red shuts nodes down in arbitrary order
     * Revised help texts
