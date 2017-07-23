@@ -222,8 +222,7 @@ module.exports = function(RED) {
               if (callResult.error == null) {
                 callResult.error = 'unknown error (check pimatic server log)'
               }
-              node.error(JSON.stringify(callResult));
-              node.error(util.format("invokeAction (%s) failed: %s", action, '' + callResult.error));
+              node.log(util.format("invokeAction (%s) failed: %s", action, '' + callResult.error));
               reject(callResult.error)
             }
           }
@@ -239,7 +238,7 @@ module.exports = function(RED) {
           else {
             errorMessage = 'connection error: ' + errorMessage;
           }
-          node.error(util.format("invokeAction (%s) failed: %s", action, errorMessage));
+          node.log(util.format("invokeAction (%s) failed: %s", action, errorMessage));
           reject(errorMessage);
         };
 
@@ -255,7 +254,7 @@ module.exports = function(RED) {
           node.pimaticSocket.once('connect_error', socketErrorHandler);
         }
         else {
-          node.error(util.format("invokeAction (%s) failed: %s", action, 'socket not ready'));
+          node.log(util.format("invokeAction (%s) failed: %s", action, 'socket not ready'));
           return reject('socket not ready')
         }
       });
@@ -599,15 +598,17 @@ module.exports = function(RED) {
           .catch(function(error) {
             node.error(util.format('deviceAction (%s.%s) failed: %s', config.deviceId, config.action, '' + error));
             node.status({fill: 'red', shape: 'ring', text: '' + error});
-            // var msg = {
-            //   payload: '',
-            //   error: '' + error,
-            //   success: false,
-            //   deviceId: config.deviceId,
-            //   action: config.action,
-            //   time: Date.now()
-            // };
-            // node.send(msg);
+            if (config.messageOnError) {
+              var msg = {
+                payload: '',
+                error: '' + error,
+                success: false,
+                deviceId: config.deviceId,
+                action: config.action,
+                time: Date.now()
+              };
+              node.send(msg);
+            }
           });
       });
 
@@ -681,14 +682,17 @@ module.exports = function(RED) {
           .catch(function(error) {
             node.error(util.format('ruleAction (%s) failed: %s', config.actionExpression, '' + error));
             node.status({fill: 'red', shape: 'ring', text: '' + error});
-            // var msg = {
-            //   payload: '',
-            //   error: '' + error,
-            //   success: false,
-            //   action: config.actionExpression,
-            //   time: Date.now()
-            // };
-            // node.send(msg);
+            if (config.messageOnError) {
+              var msg = {
+                payload: '',
+                error: '' + error,
+                success: false,
+                deviceId: config.deviceId,
+                action: config.action,
+                time: Date.now()
+              };
+              node.send(msg);
+            }
           });
       });
 
