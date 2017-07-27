@@ -1,5 +1,7 @@
 # Release History
 
+* 20170727, V1.1.1
+    * Revised documentation
 * 20170724, V1.1.0
     * Feature: Added "rule action" node type
     * Feature: Added (backwards-compatible) "Msg on Error" option for "device action" node type
