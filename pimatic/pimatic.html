@@ -47,15 +47,16 @@
     <ul>
         <li><code>Controller</code>: Select or create an controller to connect to a pimatic server</li>
         <li><code>Action</code>: Action expression which may contain variables to include items
-        of the input message object, for example <code>${ msg.payload }</code></li>
-        <li><code>Msg on Error</code>: If ticked a message will also be sent on invocation error, no
-        message will be sent on invocation error otherwise.
+        of the input message object, for example, the variable <code>${ payload }</code> refers to
+        <code>msg.payload</code></li>
+        <li><code>Msg on Error</code>: If ticked, a message will also be sent on invocation error, otherwise
+        the error will be logged, only</li>
         <li><code>Name</code>: Specify a name for the node (optional)</li>
    	 </ul>
 
 	<p><b>Message output</b></p>
     <ul>
-        <li><code>msg.payload</code>: Result value (if any, empty string otherwise)</li>
+        <li><code>msg.payload</code>: Result value if any, empty string otherwise</li>
         <li><code>msg.success</code>: Execution status (true or false, where false can only occur
         if <code>Msg on Error</code> is ticked)</li>
         <li><code>msg.actionString</code>: The action string resulting from variable substitution</li>
@@ -136,8 +137,8 @@
         <li><code>Param Value</code>: Value of the action parameter (optional). If omitted,
             <code>msg.parameterValue</code> or <code>msg.payload</code> will be used or no
             parameter will be sent if no Parameter Name is available. </li>
-        <li><code>Msg on Error</code>: If ticked a message will also be sent on invocation error, no
-        message will be sent on invocation error otherwise.
+        <li><code>Msg on Error</code>: If ticked a message will also be sent on invocation error, otherwise
+        the error will be logged, only</li>
         <li><code>Name</code>: Specify a name for the node (optional)</li>
    	</ul>
 
@@ -221,7 +222,7 @@
         <li><code>Variable</code>: Name of the variable</li>
         <li><code>Filter</code>: If checked, duplicate values will be filtered out</li>
         <li><code>Output</code>: Select, whether message shall be sent on variable change, on input, or both
-        <li><code>Name</code>: Name for the node (optional). Ff not set, the variable will be used instead</li>
+        <li><code>Name</code>: Name for the node (optional). If not set, the variable will be used instead</li>
    	 </ul>
 
 	<p><b>Message output</b></p>
