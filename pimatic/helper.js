@@ -19,7 +19,6 @@
 "use strict";
 
 var util = require('util');
-var Promise = require('bluebird');
 var _ = {
 
   hasStringValue: function hasStringValue(value, checkEmptyString) {
@@ -110,18 +109,20 @@ var _ = {
       return generate;
     })();
 
-    try {
-      while ((match = re.exec(stringExpression)) !== null) {
-        if (! checkPath(params, match[1])) {
-          throw ReferenceError('variable "' + match[1] + '" is not defined')
+    return new Promise(function (resolve, reject) {
+      try {
+        while ((match = re.exec(stringExpression)) !== null) {
+          if (! checkPath(params, match[1])) {
+            throw ReferenceError('variable "' + match[1] + '" is not defined')
+          }
         }
+        var expression = generateTemplate(stringExpression);
+        return resolve(expression(params))
       }
-      var expression = generateTemplate(stringExpression);
-      return Promise.resolve(expression(params))
-    }
-    catch (error) {
-      return Promise.reject(error)
-    }
+      catch (error) {
+        return reject(error)
+      }
+    })
   },
 
   assign: function(target, vArgs) {
