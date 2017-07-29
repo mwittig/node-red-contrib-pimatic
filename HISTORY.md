@@ -1,5 +1,7 @@
 # Release History
 
+* 20170729, V1.1.2
+    * Fixture: Removed dependency on bluebird
 * 20170727, V1.1.1
     * Revised documentation
 * 20170724, V1.1.0
