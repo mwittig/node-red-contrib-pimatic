@@ -575,7 +575,12 @@ module.exports = function(RED) {
         }
 
         if (name != null) {
-          params[name] = msg.parameterValue || msg.payload;
+          if (_.hasStringValue(config.parameterValue, true)) {
+            params[name] = config.parameterValue;
+          }
+          else {
+            params[name] = msg.parameterValue || msg.payload;
+          }
         }
 
         pimaticController.executeDeviceAction(config.deviceId, config.action, params)
