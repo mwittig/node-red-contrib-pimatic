@@ -205,6 +205,10 @@
         </select>
     </div>
     <div class="form-row">
+        <label for="node-input-initial"><i class="fa fa-bookmark-o"></i>&nbsp;Trigger Initial</label>
+        <input type="checkbox" id="node-input-initial" style="display: inline-block; width: auto; vertical-align: top;">
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;Name</label>
         <input type="text" id="node-input-name">
     </div>
@@ -222,6 +226,7 @@
         <li><code>Variable</code>: Name of the variable</li>
         <li><code>Filter</code>: If checked, duplicate values will be filtered out</li>
         <li><code>Output</code>: Select, whether message shall be sent on variable change, on input, or both
+        <li><code>Trigger Initial</code>: Output initial value on deployment/startup (optional, default: true)
         <li><code>Name</code>: Name for the node (optional). If not set, the variable will be used instead</li>
    	 </ul>
 
@@ -243,8 +248,9 @@
     defaults: {
       controller: {value: "", type: "controller", required: true},
       variable: {value: "", required: true},
-      filter: {value: "false", required: true},
+      filter: {value: false, required: false},
       output: {value: "on-both", required: false},
+      initial: {value: true, required: false},
       name: {value: "", required: false}
     },
     inputs: 1,

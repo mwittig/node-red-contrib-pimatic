@@ -56,7 +56,10 @@ module.exports = function(RED) {
       if (node.pimaticSubscribedVariables.hasOwnProperty(variable.name)) {
         var subscribers = node.pimaticSubscribedVariables[variable.name];
         for (var x = 0; x < subscribers.length; ++x) {
-          subscribers[x].emit('pimatic-variable-value-changed', value)
+          // check if initial value should be triggered as value change
+          if (subscribers[x].initial) {
+            subscribers[x].emit('pimatic-variable-value-changed', value)
+          }
         }
       }
     }
@@ -184,6 +187,9 @@ module.exports = function(RED) {
     node.registerVariable = function (variableName, subscriber) {
       startWebSocket();
 
+      if (! subscriber.hasOwnProperty('initial')) {
+        subscriber.initial = true
+      }
       if (node.pimaticSubscribedVariables.hasOwnProperty(variableName)) {
         node.pimaticSubscribedVariables[variableName].push(subscriber)
       }
@@ -194,7 +200,10 @@ module.exports = function(RED) {
       if (node.pimaticReady) {
         if (node.pimaticVariables.hasOwnProperty(variableName)) {
           var variable = node.pimaticVariables[variableName];
-          subscriber.emit('pimatic-variable-value-changed', variable);
+          // check if initial value should be triggered as value change
+          if (subscriber.initial) {
+            subscriber.emit('pimatic-variable-value-changed', variable);
+          }
         }
         else {
           // variable not found
@@ -367,6 +376,7 @@ module.exports = function(RED) {
 
       config.variable = config.variable.replace(/^[\s\$]+|\s+$/gm,'');
       node.name = config.name || '(' + config.variable + ')';
+      node.initial = config.initial;
       var pimaticController = RED.nodes.getNode(config.controller);
       node.pimaticDebug(JSON.stringify(config));
 
