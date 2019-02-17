@@ -35,7 +35,7 @@ See [Release History](https://github.com/mwittig/node-red-contrib-pimatic/blob/m
 
 # License 
 
-Copyright (c) 2017, Marcus Wittig and contributors.
+Copyright (c) 2017-2019, Marcus Wittig and contributors.
 All rights reserved.
 
 License: [Apache-2.0](https://github.com/mwittig/node-red-contrib-pimatic/blob/master/LICENSE).
