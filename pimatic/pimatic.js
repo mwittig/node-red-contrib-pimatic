@@ -389,11 +389,11 @@ module.exports = function(RED) {
             var context = node.context();
             if (context.get('value') != varEvent.name || !config.filter) {
               context.set('value', varEvent.value);
-              var msg = _.assign({
+              var msgToSend = _.assign({
                 payload: varEvent.value
               }, varEvent);
-              delete msg.value;
-              node.send(msg);
+              delete msgToSend.value;
+              node.send(msgToSend);
             }
           }
           else {
@@ -415,12 +415,12 @@ module.exports = function(RED) {
                 var context = node.context();
                 context.set('value', variable.variableValue);
 
-                var msg = _.assign({}, variable, {
+                var msgToSend = _.assign({}, msg, variable, {
                   payload: variable.value,
                   time: Date.now()
                 });
-                delete msg.value;
-                node.send(msg);
+                delete msgToSend.value;
+                node.send(msgToSend);
               })
               .catch(function(error) {
                 node.error(util.format('getVariable (%s) failed: %s', config.variable, '' + error));
@@ -505,12 +505,12 @@ module.exports = function(RED) {
                 var context = node.context();
                 context.set('value', variable.variableValue);
 
-                var msg = _.assign({}, variable, {
+                var msgToSend = _.assign({}, msg, variable, {
                   payload: variable.value,
                   time: Date.now()
                 });
-                delete msg.value;
-                node.send(msg);
+                delete msgToSend.value;
+                node.send(msgToSend);
               })
               .catch(function(error) {
                 node.error(util.format('setVariable (%s) failed: %s', config.variable, '' + error))
@@ -600,14 +600,14 @@ module.exports = function(RED) {
             var context = node.context();
             context.set('value', result);
 
-            var msg = {
+            var msgToSend = _.assign({}, msg, {
               payload: result,
               success: true,
               deviceId: config.deviceId,
               action: config.action,
               time: Date.now()
-            };
-            node.send(msg);
+            });
+            node.send(msgToSend);
             node.status({fill: 'green', shape: 'ring', text: 'ok'});
           })
           .catch(function(error) {
@@ -684,13 +684,13 @@ module.exports = function(RED) {
                 var context = node.context();
                 context.set('value', result);
 
-                var msg = {
+                var msgToSend = _.assign({}, msg, {
                   payload: result,
                   success: true,
                   action: actionString,
                   time: Date.now()
-                };
-                node.send(msg);
+                });
+                node.send(msgToSend);
                 node.status({fill: 'green', shape: 'ring', text: 'ok'});
               })
           })
