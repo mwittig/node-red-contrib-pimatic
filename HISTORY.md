@@ -1,5 +1,11 @@
 # Release History
 
+* 20190218, V1.2.0
+    * Feature: Copy input message content to triggered message if trigger on input 
+      is active, issue #5
+    * Feature: added config option to "get variable" to optionally switch off the 
+      "variable changed" trigger for the initial value after deployment/startup, issue #4 
+    * Fixture: Handling of parameter value for device action node, issue #2
 * 20170729, V1.1.2
     * Fixture: Removed dependency on bluebird
 * 20170727, V1.1.1
